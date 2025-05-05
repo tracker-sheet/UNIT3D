@@ -1,8 +1,8 @@
-# Upgrading PHP Version
+# TEST
 
 <!-- cspell:ignore ondrej,autoremove,debconf-utils,dpkg -->
 
-## Upgrade to PHP 8
+## TEST
 
 `sudo apt update`
 `sudo apt -y upgrade`
@@ -11,13 +11,13 @@ A reboot is important after any upgrade.
 
 `sudo systemctl reboot`
 
-After a few minutes SSH back into your server
+TEST
 
 `sudo apt update`
 `sudo apt install lsb-release ca-certificates apt-transport-https software-properties-common -y`
 `sudo add-apt-repository ppa:ondrej/php`
 
-Hit enter key when prompted to add the repository
+TEST
 
 `sudo apt update`
 `sudo apt install php8.0`
