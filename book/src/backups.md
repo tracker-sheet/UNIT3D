@@ -1,212 +1,126 @@
-# Backups
+# Updating UNIT3D
 
-UNIT3D offers built in backup tools, available through the web dashboard or via Artisan commands, allowing you to create, manage, and restore your application snapshots.
+Update UNIT3D to the latest version by reviewing the release notes and following the steps below:
 
-## 1. Configuration
+## 1. Create Backup
 
- **Customize** `config/backup.php` in your editor and adjust settings as needed; inline notes outline the available configuration parameters.
+UNIT3D offers built-in backups. Refer to the [Backups documentation](/book/src/backups.md) for usage.
 
- **Key structure**:  
+> [!IMPORTANT]
+> Ensure there is a complete backup before proceeding.
 
-- **`backup`**  
+## 2. Enter Maintenance Mode
 
-    - **`name`**   
+```bash
+cd /var/www/html
+php artisan down
+```
 
-    - **`source`**   
-        - **`files`**  
+## 3. Update UNIT3D
 
-            Specifies which directories and files to `include` and which to `exclude` in the backup.
+Watch this short walkthrough of the update process:
 
-            ```php
-                'include' => [
-                    base_path(),           
-                 ],
-
-                'exclude' => [
-                    base_path(),
-                    base_path('vendor'),
-                    base_path('node_modules'),
-                    base_path('storage'),
-                    base_path('public/vendor/joypixels'), 
-                 ],
-            ```       
-
-           - **`follow_links`** 
-
-           - **`ignore_unreadable_directories`** 
-
-           - **`relative_path`** 
-
-        - **`databases`**  
-
-            Specifies the database connections to back up.
-
-    - **`database_dump_compressor`**  
-
-         Compressor class (e.g. `Spatie\DbDumper\Compressors\GzipCompressor::class`) or `null` to disable.
-
-    - **`destination`**  
-
-         Defines the storage location for backup files.​
-
-    - **`temporary_directory`**  
-
-     Staging directory for temporary files.
-
-- **`notifications`**  
-
-    Define when and how backup events trigger alerts via mail, Slack, or custom channels. 
-
-- **`monitor_backups`**  
-
-    Detect backup issues; triggers `UnhealthyBackupWasFound` when needed.  
-
-- **`cleanup`**  
-
-    Define how long to keep backups and when to purge old archives. 
-
-    - **`strategy`**  
-
-    - **`default_strategy`**  
-
-         Keeps all backups for 7 days; then retains daily backups for 16 days, weekly for 8 weeks, monthly for 4 months, and yearly for 2 years. Deletes old backups exceeding 5000 MB.
-
-         ```php
-             'keep_all_backups_for_days'                => 7,
-             'keep_daily_backups_for_days'              => 16,
-             'keep_weekly_backups_for_weeks'            => 8,
-             'keep_monthly_backups_for_months'          => 4,
-             'keep_yearly_backups_for_years'            => 2,
-             'delete_oldest_backups_when_using_more_megabytes_than' => 5000,
-         ```
-
-- **`security`**  
-
-    Ensure that only someone with your `APP_KEY` can decrypt and restore snapshots.
-
-## 2. Create a Backup
-
-You can access the built-in Backups dashboard from the Staff menu. It shows each backup’s status, health, size, and count, and lets administrators launch unscheduled full, database, or files-only backups instantly. Another approach is to use the command line.
-
-> [!IMPORTANT]  
-> Backups initiated via the Staff Dashboard buttons may timeout on very large installations. 
-
-- The following artisan commands are available: 
-
-   ```sh
-   php artisan backup:run
-   ```
-   
-   Creates a timestamped ZIP of application files and database.
-
-   ```sh
-   php artisan backup:run --only-db
-   ```
-
-   Creates a timestamped ZIP containing only the database.
-
-   ```sh
-   php artisan backup:run --only-files
-   ```
-
-   Creates a timestamped ZIP containing only application files.
-
-
-## 3. Viewing Backup List
-
-- **List** existing backups:
-
-   ```sh
-   php artisan backup:list
-   ```
-
-
-## 4. Restoring a Backup
-
-> [!WARNING]  
-> **Always test backup restoration procedures on a non‑critical environment before applying to production.**  
-> Incorrect restoration can lead to data loss or service disruption.
-
-1. **Install prerequisites** (Debian/Ubuntu):
-
-   ```sh
-   sudo apt update && sudo apt install p7zip-full -y
-   ```
-
-2. **Retrieve** your application key:
-
-   ```sh
-   grep '^APP_KEY=' /var/www/html/.env
-   ```
-
-3. **Extract** the outer archive (enter APP_KEY when prompted):
-
-   ```sh
-   7z x [UNIT3D]YYYY-MM-DD-HH-MM-SS.zip
-   ```
-
-4. **Unzip** inner archive, if generated:
-
-   ```sh
-   7z x backup.zip
-   ```
+<video width="320" height="240" controls>
+  <source src="https://github.com/user-attachments/assets/57a2f03c-dc01-491e-bdad-99768a19699f.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
 
 > [!NOTE]
-> **Full backups will contain two parts; the files backup and a database backup or dump file.**
+> Before running the update, review the new release’s minimum requirements to ensure the environment meets them.
 
-### **Restoring the files backup:**
+1. **Proceed to update:**  
 
-1. **Copy** restored files to webroot:
+   The updater will fetch the latest commits from the upstream repository and stage them for installation.
 
-   ```sh
-   sudo cp -a ~/tempBackup/var/www/html/. /var/www/html/
-   ```
-
-2. **Fix** file permissions:
-
-   ```sh
-   sudo chown -R www-data:www-data /var/www/html
-   sudo find /var/www/html -type f -exec chmod 664 {} \;
-   sudo find /var/www/html -type d -exec chmod 775 {} \;
-   ```
-
-### **Restoring the database backup:**
-
-1. **Retrieve** your database credentials:
-
-   ```sh
-   grep '^DB_' /var/www/html/.env
-   ```
-
-2. **Restore** your database:
-
-   ```sh
-   mysql -u unit3d -p unit3d < ~/tempBackup/db-dumps/mysql-unit3d.sql 
-   ```
-
-## 5. Reset & Cleanup
-
-> After restoring backups, ensure to reset configurations and clean up temporary files to maintain system integrity.
-
-1. **Fix** permissions:
-
-   ```sh
-   sudo chown -R www-data:www-data /var/www/html
-   sudo find /var/www/html -type f -exec chmod 664 {} \;
-   sudo find /var/www/html -type d -exec chmod 775 {} \;
-   ```
-
-2. **Reinstall** Node dependencies & rebuild (if assets need it):
-
-   ```sh
-   sudo rm -rf node_modules && sudo bun install && sudo bun run build
-   ```
-
-3. **Clear** caches & restart services:
-
-   ```sh
+   ```bash
    cd /var/www/html
-   sudo php artisan set:all_cache
-   sudo systemctl restart php8.4-fpm
-   sudo php artisan queue:restart
+   php artisan git:update
    ```
+
+   There will be a prompt to confirm each step; choose `yes` to overwrite with the new version.
+
+   ```bash
+   Start the update process (yes/no) [yes]:
+   > yes
+   ```
+
+2. **Accept upstream files:**  
+
+   When prompted for each changed file, type `yes` to overwrite the local copy or press `Enter` to accept the default shown in brackets.
+
+   ```bash
+   Update config/unit3d.php (yes/no) [yes]:
+   > yes
+
+   git checkout origin/master -- config/unit3d.php
+   [============================] (Done!)
+   ```
+
+3. **Run new migrations:**
+
+   ```bash
+   Run new migrations (php artisan migrate) (yes/no) [yes]:
+   > yes
+   ```
+
+4. **Install new packages:**
+
+   ```bash
+   Install new packages (composer install) (yes/no) [yes]:
+   > yes
+   ```
+
+5. **Compile assets:**
+
+   ```bash
+   Compile assets (bun run build) (yes/no) [yes]:
+   > yes
+   ```
+
+## Troubleshooting Clean-up
+
+The following commands are **optional** and should be run only as needed to resolve specific errors:
+
+- **Finish any migrations not completed:**
+
+    ```sh
+    sudo php artisan migrate
+    ```
+
+- **Reinstall dependencies:**
+
+    ```sh
+    composer install --prefer-dist --no-dev -o
+    ```
+
+- **Clear caches:**
+
+    ```sh
+    sudo php artisan cache:clear && \
+    sudo php artisan queue:clear && \
+    sudo php artisan auto:email-blacklist-update && \
+    sudo php artisan auto:cache_random_media && \
+    sudo php artisan set:all_cache
+    ```
+
+- **Rebuild static assets:**
+
+    ```sh
+    sudo bun install && sudo bun run build
+    ```
+
+- **Restart services:**
+
+    ```sh
+    sudo systemctl restart php8.4-fpm && \
+    sudo php artisan queue:restart && \
+    sudo php artisan up
+    ```
+
+- **If running external UNIT3D-Announce, restart the supervisor services:**
+
+    ```sh
+    sudo supervisorctl reread && \
+    sudo supervisorctl update && \
+    sudo supervisorctl reload
+    ```
