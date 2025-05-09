@@ -1,208 +1,209 @@
-# TEST
+# UNIT3D Announce Setup Tutorial
 
-<!-- cspell:ignore ondrej,autoremove,debconf-utils,dpkg -->
+[![UNIT3D Announce](https://img.shields.io/badge/UNIT3D-Announce%20Setup-blueviolet)](https://github.com/HDInnovations/UNIT3D-Announce)
 
-## TEST
+<p align="center">
+  <img src="https://ptpimg.me/6o8x8j.png" alt="UNIT3D Logo" style="width: 12%;">
+</p>
 
-`sudo apt update`
-`sudo apt -y upgrade`
+_Set up the UNIT3D Announce service on your existing UNIT3D installation using this step-by-step guide._
 
-A reboot is important after any upgrade.
+---
 
-`sudo systemctl reboot`
+> [!IMPORTANT]
+> **Before starting, ensure you have created and securely stored a backup of your current installation.**
 
-TEST
+## Table of Contents
 
-`sudo apt update`
-`sudo apt install lsb-release ca-certificates apt-transport-https software-properties-common -y`
-`sudo add-apt-repository ppa:ondrej/php`
+- [Prerequisites](#prerequisites)  
+- [Installation Steps](#installation-steps)  
+  - [1. Prepare the Environment](#1-prepare-the-environment)  
+  - [2. Clone & Configure UNIT3D-Announce](#2-clone--configure-unit3d-announce)  
+  - [3. Build the Tracker](#3-build-the-tracker)  
+  - [4. Update UNIT3D Environment](#4-update-unit3d-environment)  
+  - [5. Configure Nginx & Supervisor](#5-configure-nginx--supervisor)  
+  - [6. Finalize & Verify Setup](#6-finalize--verify-setup)  
+- [Troubleshooting](#troubleshooting)  
+- [Acknowledgements](#acknowledgements)  
 
-TEST
+---
 
-`sudo apt update`
-`sudo apt install php8.0`
-`sudo apt-get install -qq curl debconf-utils php-pear php8.0-curl php8.0-dev php8.0-gd php8.0-mbstring php8.0-zip php8.0-mysql php8.0-xml php8.0-fpm php8.0-intl php8.0-bcmath php8.0-cli php8.0-opcache`
-`sudo service apache2 stop`
+## Prerequisites
 
-Next lets edit NGINX to use new PHP8
+- An existing UNIT3D installation (typically at `/var/www/html`).  
+- Sudo privileges for system configuration.  
+- Basic knowledge of terminal commands and text editing.  
+- Your database credentials (`DB_*`) from `/var/www/html/.env`.  
+- Rust compiler and package manager (`cargo`) installed.
 
-`sudo nano /etc/nginx/sites-available/default`
+---
 
-Find `fastcgi_pass unix:/var/run/php/***.sock;`
+## Installation Steps
 
-`***` will be your site name, unit3d or php7.4 for the most part
+### 1. Prepare the Environment
 
-Replace `fastcgi_pass unix:/var/run/php/***.sock;` with `fastcgi_pass unix:/var/run/php/php8.0-fpm.sock;`.
+Navigate into your UNIT3D base directory:
 
-Save and exit.
-
-Test config `sudo nginx -t`
-
-*If you didn't mess up you will see
-```
-nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-nginx: configuration file /etc/nginx/nginx.conf test is successful
-```
-
-`sudo systemctl reload nginx`
-`sudo systemctl reload php8.0-fpm`
-`sudo apt purge '^php7.4.*'`
-
-You should now be running PHP8 and can confirm by checking your staff dashboard.
-
-![IMAGE](https://i.postimg.cc/7LF8CQyM/Screen-Shot-2020-12-17-at-9-08-33-AM.png)
-
-## Upgrade to PHP 8.1
-
-`sudo apt update`
-`sudo apt -y upgrade`
-
-A reboot is important after any upgrade.
-
-`sudo systemctl reboot`
-
-After a few minutes SSH back into your server
-
-`sudo apt update`
-`sudo apt install lsb-release ca-certificates apt-transport-https software-properties-common -y`
-`sudo add-apt-repository ppa:ondrej/php`
-
-Hit enter key when prompted to add the repository
-
-`sudo apt update`
-`sudo apt install php8.1`
-`sudo apt-get install -qq curl debconf-utils php-pear php8.1-curl php8.1-dev php8.1-gd php8.1-mbstring php8.1-zip php8.1-mysql php8.1-xml php8.1-fpm php8.1-intl php8.1-bcmath php8.1-cli php8.1-opcache`
-`sudo service apache2 stop`
-
-Next lets edit NGINX to use new PHP 8.1
-
-`sudo nano /etc/nginx/sites-available/default`
-
-Find `fastcgi_pass unix:/var/run/php/***.sock;`
-
-`***` will be your site name, unit3d or php8.0 for the most part
-
-Replace `fastcgi_pass unix:/var/run/php/***.sock;` with `fastcgi_pass unix:/var/run/php/php8.1-fpm.sock;`.
-
-Save and exit.
-
-Test config `sudo nginx -t`
-
-*If you didn't mess up you will see
-```
-nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-nginx: configuration file /etc/nginx/nginx.conf test is successful
+```bash
+cd /var/www/html
 ```
 
-`sudo systemctl reload nginx`
-`sudo systemctl reload php8.1-fpm`
-`sudo apt purge '^php7.4.*'`
+### 2. Clone & Configure UNIT3D-Announce
 
-You should now be running PHP8.1 and can confirm by checking your staff dashboard.
+1. Clone the Announce repository and enter it:
 
-[![IMAGE](https://i.postimg.cc/6TsW8yGv/Screen-Shot-2021-11-25-at-10-47-00-PM.png)](https://postimg.cc/kRc3ZMsJ)
+   ```bash
+   git clone -b v0.1 https://github.com/HDInnovations/UNIT3D-Announce unit3d-announce
+   cd unit3d-announce
+   ```
 
-## Upgrade to PHP 8.2
+2. Copy and edit the example environment:
 
-`sudo apt update`
-`sudo apt -y upgrade`
+   ```bash
+   cp .env.example .env
+   sudo nano .env
+   ```
 
-A reboot is important after any upgrade.
+   - Ensure `DB_*` values match your main UNIT3D `.env`.  
+   - Remove any trailing comma after `ANNOUNCE_MIN_ENFORCED` (e.g. `ANNOUNCE_MIN_ENFORCED=1740`).  
+   - Uncomment `REVERSE_PROXY_CLIENT_IP_HEADER_NAME="X-Real-IP"` if using a reverse proxy.
 
-`sudo systemctl reboot`
+### 3. Build the Tracker
 
-After a few minutes SSH back into your server
+Install Rust’s package manager and compile:
 
-`sudo apt update`
-`sudo apt install lsb-release ca-certificates apt-transport-https software-properties-common -y`
-`sudo add-apt-repository ppa:ondrej/php`
-
-Hit enter key when prompted to add the repository
-
-`sudo apt update`
-`sudo apt install php8.2`
-`sudo apt-get install -qq curl debconf-utils php-pear php8.2-curl php8.2-dev php8.2-gd php8.2-mbstring php8.2-zip php8.2-mysql php8.2-xml php8.2-fpm php8.2-intl php8.2-bcmath php8.2-cli php8.2-opcache`
-`sudo service apache2 stop`
-`sudo apt remove apache2`
-
-Next lets edit NGINX to use new PHP 8.2
-
-`sudo nano /etc/nginx/sites-available/default`
-
-Find `fastcgi_pass unix:/var/run/php/***.sock;`
-
-`***` will be your site name, unit3d or php8.1 for the most part
-
-Replace `fastcgi_pass unix:/var/run/php/***.sock;` with `fastcgi_pass unix:/var/run/php/php8.2-fpm.sock;`.
-
-Save and exit.
-
-Test config `sudo nginx -t`
-
-*If you didn't mess up you will see
-```
-nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-nginx: configuration file /etc/nginx/nginx.conf test is successful
+```bash
+sudo apt update
+sudo apt -y install cargo
+cargo build --release
 ```
 
-`sudo systemctl restart nginx`
-`sudo systemctl restart php8.2-fpm`
-`sudo systemctl stop php8.1-fpm`
-`sudo apt purge '^php8.1.*'`
-`sudo apt autoremove`
+> [!NOTE]
+> **The compiled binary will be located at** `target/release/unit3d-announce`.
 
-You should now be running PHP8.2 and can confirm by checking your staff dashboard.
+### 4. Update UNIT3D Environment
 
-NOTE: If you had tuning done on PHP 8.1 you will need to reapply them to new PHP 8.2 configs.
-`sudo nano /etc/php/8.2/fpm/pool.d/www.conf`
-`sudo nano /etc/php/8.2/fpm/php.ini`
+Return to your UNIT3D directory and add tracker variables:
 
-## Upgrade to PHP 8.3
-
-Save existing php package list to packages.txt file in case you have some additional ones not noted in this guide.
-
-`sudo dpkg -l | grep php | tee packages.txt`
-
-Add Ondrej's PPA
-
-`sudo add-apt-repository ppa:ondrej/php` # Press enter when prompted.
-`sudo apt update`
-
-Install new PHP 8.3 packages
-
-`sudo apt install php8.3-common php8.3-cli php8.3-fpm php8.3-{redis,bcmath,curl,dev,gd,igbinary,intl,mbstring,mysql,opcache,readline,xml,zip}`
-
-Next lets edit NGINX to use new PHP 8.3
-
-`sudo nano /etc/nginx/sites-available/default`
-
-Find `fastcgi_pass unix:/var/run/php/***.sock;`
-
-`***` will be your site name, unit3d or php8.2 for the most part
-
-Replace `fastcgi_pass unix:/var/run/php/***.sock;` with `fastcgi_pass unix:/var/run/php/php8.3-fpm.sock;`.
-
-Save and exit.
-
-Test config `sudo nginx -t`
-
-*If you didn't mess up you will see
-```
-nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-nginx: configuration file /etc/nginx/nginx.conf test is successful
+```bash
+cd /var/www/html
+sudo nano .env
 ```
 
-`sudo systemctl restart nginx`
-`sudo systemctl restart php8.3-fpm`
-`sudo systemctl stop php8.2-fpm`
+Add (or update) these variables to match your Announce `.env`:
 
-Remove old packages
+```env
+TRACKER_HOST=127.0.0.1
+TRACKER_PORT=3000
+TRACKER_KEY=your_32_characters_min_api_key
+```
 
-`sudo apt purge '^php8.2.*'`
+> [!IMPORTANT]
+> **`TRACKER_KEY` must be at least 32 characters long.**
 
+### 5. Configure Nginx & Supervisor
 
-You should now be running PHP8.3 and can confirm by checking your staff dashboard.
+#### Nginx
 
-NOTE: If you had tuning done on PHP 8.2 you will need to reapply them to new PHP 8.3 configs.
-`sudo nano /etc/php/8.3/fpm/pool.d/www.conf`
-`sudo nano /etc/php/8.3/fpm/php.ini`
+Edit your site’s Nginx config (e.g. `/etc/nginx/sites-enabled/default`):
+
+```nginx
+location /announce/ {
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header Host $host;
+    proxy_pass http://127.0.0.1:3000$request_uri;
+    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
+    set_real_ip_from 0.0.0.0/0;
+}
+```
+
+- Adjust `proxy_pass` IP:Port to your Announce listener.  
+- Change `set_real_ip_from` to your proxy’s IP range.
+
+#### Supervisor
+
+Create or update `/etc/supervisor/conf.d/unit3d-announce.conf`:
+
+```ini
+[program:unit3d-announce]
+process_name=%(program_name)s_%(process_num)02d
+command=/var/www/html/unit3d-announce/target/release/unit3d-announce
+directory=/var/www/html/unit3d-announce
+autostart=true
+autorestart=false
+user=root
+numprocs=1
+redirect_stderr=true
+stdout_logfile=/var/www/html/storage/logs/announce.log
+```
+
+Reload Supervisor:
+
+```bash
+sudo supervisorctl reread
+sudo supervisorctl update
+```
+
+> [!NOTE]
+> **Supervisor log:** `/var/www/html/storage/logs/announce.log`
+
+#### Enable External Tracker in UNIT3D
+
+Edit `config/announce.php`:
+
+```php
+<?php
+
+return [
+    'external' => true,
+    'host'     => env('TRACKER_HOST', '127.0.0.1'),
+    'port'     => env('TRACKER_PORT', 3000),
+    'key'      => env('TRACKER_KEY'),
+];
+```
+
+### 6. Finalize & Verify Setup
+
+Restart services and clear caches:
+
+```bash
+cd /var/www/html
+sudo systemctl restart nginx
+sudo supervisorctl reload
+sudo php artisan set:all_cache
+sudo systemctl restart php8.4-fpm
+sudo php artisan queue:restart
+```
+
+Check Announce process status:
+
+```bash
+sudo supervisorctl status unit3d-announce:*
+```
+
+For logs:
+
+```bash
+supervisorctl tail -100 unit3d-announce:unit3d-announce_00
+```
+
+---
+
+## Troubleshooting
+
+- **`.env` typos**: Verify all keys (`TRACKER_*`, `DB_*`, `ANNOUNCE_*`).  
+- **Nginx syntax**: Run `sudo nginx -t` after edits.  
+- **Supervisor errors**: Inspect `/var/www/html/storage/logs/announce.log`.  
+- **API key issues**: Ensure `TRACKER_KEY` is ≥32 characters.
+
+---
+
+## Acknowledgements
+
+Made possible by airclay ([@ericlay](https://github.com/ericlay)).
+
+---
+
+_If you have questions or suggestions, please open an issue or submit a pull request._
