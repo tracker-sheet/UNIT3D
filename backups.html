@@ -37,26 +37,34 @@
 <div id="body-container">
     <script>
         try {
-            let t = localStorage.getItem('mdbook-theme'), s = localStorage.getItem('mdbook-sidebar');
-            if (t.startsWith('"')&&t.endsWith('"')) localStorage.setItem('mdbook-theme', t.slice(1,-1));
-            if (s.startsWith('"')&&s.endsWith('"')) localStorage.setItem('mdbook-sidebar', s.slice(1,-1));
-        } catch(e){}
+            let t = localStorage.getItem('mdbook-theme'),
+                s = localStorage.getItem('mdbook-sidebar');
+            if (t.startsWith('"') && t.endsWith('"'))
+                localStorage.setItem('mdbook-theme', t.slice(1, -1));
+            if (s.startsWith('"') && s.endsWith('"'))
+                localStorage.setItem('mdbook-sidebar', s.slice(1, -1));
+        } catch (e) {}
     </script>
     <script>
-        const def = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
-        let theme; try{ theme = localStorage.getItem('mdbook-theme') }catch(e){}
+        const def = window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? default_dark_theme
+            : default_light_theme;
+        let theme;
+        try { theme = localStorage.getItem('mdbook-theme'); } catch (e) {}
         theme = theme || def;
         document.documentElement.classList.remove('light');
-        document.documentElement.classList.add(theme,'js');
+        document.documentElement.classList.add(theme, 'js');
     </script>
 
     <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
     <script>
-        let sb; const anc = document.getElementById("sidebar-toggle-anchor");
-        if (document.body.clientWidth>=1080) { try{ sb=localStorage.getItem('mdbook-sidebar') }catch{}; sb=sb||'visible'; }
-        else sb='hidden';
-        anc.checked = sb==='visible';
-        document.documentElement.classList.add("sidebar-"+sb);
+        let sb, anc = document.getElementById("sidebar-toggle-anchor");
+        if (document.body.clientWidth >= 1080) {
+            try { sb = localStorage.getItem('mdbook-sidebar'); } catch {}
+            sb = sb || 'visible';
+        } else sb = 'hidden';
+        anc.checked = sb === 'visible';
+        document.documentElement.classList.add("sidebar-" + sb);
     </script>
 
     <nav id="sidebar" class="sidebar" aria-label="Table of contents">
@@ -99,8 +107,13 @@
             </div>
 
             <div id="search-wrapper" class="hidden">
-                <form id="searchbar-outer"><input type="search" id="searchbar" placeholder="Search this book …"></form>
-                <div id="searchresults-outer" class="hidden"><div id="searchresults-header"></div><ul id="searchresults"></ul></div>
+                <form id="searchbar-outer">
+                    <input type="search" id="searchbar" placeholder="Search this book …">
+                </form>
+                <div id="searchresults-outer" class="hidden">
+                    <div id="searchresults-header"></div>
+                    <ul id="searchresults"></ul>
+                </div>
             </div>
 
             <div id="content" class="content">
@@ -114,7 +127,7 @@
                     <p>Refer to the upstream documentation for configuration and usage details.</p>
 
                     <ul>
-                        <li><strong>Consult</strong> the project’s <a href="https://github.com/Roardom/UNIT3D-Announce/blob/main/README.md">README</a> for installation and usage instructions.</li>
+                        <li><strong>Consult</strong> the project’s <a href="https://github.com/Roardom/UNIT3D-Announce/blob/main/README.md">README.md</a> for installation and usage instructions.</li>
                         <li><strong>Review</strong> the <a href="https://github.com/Roardom/UNIT3D-Announce/blob/main/.env.example">.env.example</a> to configure required variables.</li>
                     </ul>
                 </main>
