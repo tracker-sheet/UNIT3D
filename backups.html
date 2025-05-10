@@ -1,34 +1,148 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>UNIT3D-Announce</title>
-  <style>
-    body { font-family: sans-serif; line-height: 1.6; padding: 2rem; background: #f9f9f9; }
-    h1 { margin-bottom: 1rem; }
-    .admonition { border-left: 4px solid #4CAF50; background: #f0f9f4; padding: 0.5rem 1rem; margin: 1rem 0; }
-    .admonition .admonition-title { font-weight: bold; }
-    ul { margin: 1rem 0; padding-left: 1.5rem; }
-    ul li { margin-bottom: 0.5rem; }
-    a { color: #0366d6; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-  </style>
-</head>
-<body>
+<!DOCTYPE HTML>
+<html lang="en" class="light sidebar-visible" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>UNIT3D-Announce - UNIT3D Documentation</title>
 
-  <h1>UNIT3D-Announce</h1>
+        <!-- Custom HTML head -->
+        <meta name="description" content="High-performance BitTorrent announce service for UNIT3D">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
 
-  <div class="admonition">
-    <div class="admonition-title">TIP</div>
-    <p>Offer a dedicated BitTorrent announce service designed for UNIT3D.</p>
-  </div>
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
 
-  <p>Refer to the upstream documentation for configuration and usage details.</p>
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
 
-  <ul>
-    <li><strong>Consult</strong> the project’s <a href="https://github.com/Roardom/UNIT3D-Announce/blob/main/README.md" target="_blank">README</a> for installation and usage instructions.</li>
-    <li><strong>Review</strong> the <a href="https://github.com/Roardom/UNIT3D-Announce/blob/main/.env.example" target="_blank"><code>.env.example</code></a> to configure required variables.</li>
-  </ul>
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" id="highlight-css" href="highlight.css">
+        <link rel="stylesheet" id="tomorrow-night-css" href="tomorrow-night.css">
+        <link rel="stylesheet" id="ayu-highlight-css" href="ayu-highlight.css">
 
-</body>
+        <script>
+            const path_to_root = "";
+            const default_light_theme = "light";
+            const default_dark_theme = "navy";
+        </script>
+        <script src="toc.js"></script>
+    </head>
+    <body>
+    <div id="body-container">
+        <script>
+            try {
+                let t = localStorage.getItem('mdbook-theme'), s = localStorage.getItem('mdbook-sidebar');
+                if (t.startsWith('"')&&t.endsWith('"')) localStorage.setItem('mdbook-theme', t.slice(1,-1));
+                if (s.startsWith('"')&&s.endsWith('"')) localStorage.setItem('mdbook-sidebar', s.slice(1,-1));
+            } catch(e){}
+        </script>
+        <script>
+            const def = window.matchMedia("(prefers-color-scheme: dark)").matches ? default_dark_theme : default_light_theme;
+            let theme; try{ theme = localStorage.getItem('mdbook-theme') }catch(e){}
+            theme = theme || def;
+            document.documentElement.classList.remove('light');
+            document.documentElement.classList.add(theme,'js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+        <script>
+            let sb; const anc = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth>=1080) { try{ sb=localStorage.getItem('mdbook-sidebar') }catch{}; sb=sb||'visible'; }
+            else sb='hidden';
+            anc.checked = sb==='visible';
+            document.documentElement.classList.add("sidebar-"+sb);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <mdbook-sidebar-scrollbox class="sidebar-scrollbox"></mdbook-sidebar-scrollbox>
+            <noscript><iframe class="sidebar-iframe-outer" src="toc.html"></iframe></noscript>
+            <div id="sidebar-resize-handle"><div class="sidebar-resize-indicator"></div></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+            <div class="page">
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" title="Change theme">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="default_theme">Auto</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" title="Search (S)">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">UNIT3D Documentation</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book">
+                            <i class="fa fa-print"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer"><input type="search" id="searchbar" placeholder="Search this book …"></form>
+                    <div id="searchresults-outer" class="hidden"><div id="searchresults-header"></div><ul id="searchresults"></ul></div>
+                </div>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="unit3d-announce"><a class="header" href="#unit3d-announce">UNIT3D-Announce</a></h1>
+
+                        <blockquote>
+                            <p><strong>TIP:</strong> Offer a dedicated BitTorrent announce service designed for UNIT3D.</p>
+                        </blockquote>
+
+                        <p>High-performance backend tracker compatible with UNIT3D software.</p>
+
+                        <ul>
+                            <li><strong>Consult</strong> the upstream <a href="README.html">README</a> for install &amp; usage.</li>
+                            <li><strong>Review</strong> the <a href=".env.example">.env.example</a> to configure required variables.</li>
+                        </ul>
+
+                        <blockquote>
+                            <strong>IMPORTANT:</strong> Adjust required keys, then rebuild and restart the announcer service for changes to take effect.
+                        </blockquote>
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <a rel="prev" href="backups.html" class="mobile-nav-chapters previous"><i class="fa fa-angle-left"></i></a>
+                        <a rel="next prefetch" href="basic_tuning.html" class="mobile-nav-chapters next"><i class="fa fa-angle-right"></i></a>
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                <a rel="prev" href="backups.html" class="nav-chapters previous"><i class="fa fa-angle-left"></i></a>
+                <a rel="next prefetch" href="basic_tuning.html" class="nav-chapters next"><i class="fa fa-angle-right"></i></a>
+            </nav>
+        </div>
+    </div>
+
+    <script src="elasticlunr.min.js"></script>
+    <script src="mark.min.js"></script>
+    <script src="searcher.js"></script>
+    <script src="clipboard.min.js"></script>
+    <script src="highlight.js"></script>
+    <script src="book.js"></script>
+    </body>
 </html>
